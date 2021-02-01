@@ -1,0 +1,128 @@
+---
+title: "What type of Students are responding to purple posts?"
+author: "Santosh Jnawali ,  Hussam Taj"
+date: "10/29/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+master <- read.csv("C:/Users/Hussam Taj/Desktop/Fall 2019/STAT 300/ChangeLab Purple Posts/PurplePostMaster.csv")
+replies <- read.csv("C:/Users/Hussam Taj/Desktop/Fall 2019/STAT 300/ChangeLab Purple Posts/PurplePostReplies.csv")
+StudentStaticInformation <- read.csv("C:/Users/Hussam Taj/Desktop/Fall 2019/STAT 300/ChangeLab Purple Posts/StudentStaticInformation.csv")
+StudentTermInformation <- read.csv("C:/Users/Hussam Taj/Desktop/Fall 2019/STAT 300/ChangeLab Purple Posts/StudentTermInformation.csv")
+
+```
+
+
+##What kind of students are responding to the purple post based on the different variable?
+
+Need to know the total participants, 
+Replied puple post no. Participant Id, 
+What type of replies are characterized by different variable , 
+Variable may be Race, Geography , etc.
+
+
+##In order to know the exact number of student replying the purple post , we are looking at the participant ID from replied dataset matching to the student Annon ID of Master dataset . 
+```{r}
+replied_participant<- unique(replies$ParticipantId)
+
+Student_annon<- unique(master$StudentAnonId)
+```
+
+##Counting the number of student replying to the purple post 
+
+```{r}
+count<-sum(Student_annon %in% replied_participant)
+count
+```
+
+
+##Total number of unique student participants
+```{r}
+length(unique(master$StudentAnonId))
+
+```
+
+## Proportion of student replying to the purple post 
+```{r}
+336/2657
+```
+12.64% of the student who are issued purple post are replying to them. 
+
+## Finding the information of student replying purple post. 
+
+```{r}
+replied_student_annonID<-intersect(replied_participant, Student_annon)
+```
+
+```{r}
+reply_Indicator<-StudentStaticInformation%>%
+  mutate(Reply=if_else(AnonStudentId %in% replied_student_annonID,1,0))
+```
+
+##Exploratory Data analysis 
+Bar plot of the student replying to purple post and not replying to purple post .
+```{r}
+
+plot1<-ggplot(data = reply_Indicator) + 
+  geom_bar(mapping = aes(x =factor(Reply)),width = 0.5)
+plot1
+```
+Here, O indicates the students not replying purple post and 1 indicates student replying purple post.
+
+Looking at the plot based on the Geographic region
+
+```{r}
+ggplot(data = reply_Indicator) + 
+  geom_bar(mapping = aes(x =factor(Reply),fill=GeographicRegion),width = 0.5)
+
+```
+
+
+```{r}
+ggplot(data = reply_Indicator) + 
+  geom_bar(mapping = aes(x =factor(Reply),fill=International),width = 0.5)
+```
+```{r}
+ggplot(data = reply_Indicator) + 
+  geom_bar(mapping = aes(x =factor(Reply),fill=CurrentStatus),width = 0.5)
+```
+##separate unique student and their geographic and other information.
+##make a different dataset includeing everyinformation with a variable replied or not. 
+##Make several scatterplot, box plot using the available variables.
+
+```{r}
+new_replyr<- StudentTermInformation%>%
+  mutate(Reply=if_else(StudentTermInformation$StudentAnonId %in% replied_student_annonID,1,0))
+```
+
+
+
+##Filtering unique student ID information from the dataset studentTermInformation:
+
+```{r}
+unique_info<-subset(new_replyr,!duplicated(StudentAnonId))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
